@@ -1,0 +1,25 @@
+.screen {
+  display: flex;
+  padding: 1rem;
+  height: 100%;
+  width: 100%;
+  border: 1px solid firebrick;
+}
+
+.comments-section-wrapper {
+  width: 33%;
+  border: 1px solid firebrick;
+  /* height:100%; */
+}
+.board-section-wrapper {
+  width: 44%;
+  /* border: 1px solid firebrick; */
+}
+.analysis-section-wrapper {
+  width: 23%;
+  border: 1px solid firebrick;
+  /* height: 100%; */
+}
+.wrapper {
+
+}

@@ -1,0 +1,27 @@
+.comment-wrapper {
+  border: 1px solid beige;
+  border-radius: 1rem;
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap:0.1rem;
+  background-color: rgba(128, 128, 128, .5);
+
+}
+
+.title {
+  font-weight: bold;
+  font-size:x-large;
+  color: wheat;
+}
+
+.body {
+  color: beige;
+  font-size: larger;
+}
+
+.tags {
+  font-style: italic;
+  text-align: right;
+  color: wheat;
+}

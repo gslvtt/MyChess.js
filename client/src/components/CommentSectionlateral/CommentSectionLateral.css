@@ -1,0 +1,20 @@
+.comment-section-lateral {
+  display:flex;
+  flex-direction: column;
+  /* justify-content: space-between; */
+  height: 100%;
+  /* padding:1rem; */
+}
+.comment-column-wrapper::-webkit-scrollbar {
+  display: none;
+}
+.comment-column-outer-wrapper {
+  height: 60%;
+  border: 1px solid firebrick;
+}
+
+
+.comment-filters-outer-wrapper {
+  height:40%;
+  border: 1px solid firebrick;
+}

@@ -1,0 +1,21 @@
+.analysis-section-lateral {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: space-between; */
+  height: 100%;
+  /* padding:1rem; */
+}
+
+.analysis-column-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.pgn-display-wrapper {
+  height: 60%;
+}
+
+
+.opening-explorer-wrapper {
+  height: 40%;
+  border: 1px solid firebrick;
+}
