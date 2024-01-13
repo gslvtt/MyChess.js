@@ -3,7 +3,6 @@ import './Board.css'
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 import { validateFen } from 'chess.js';
-// import validateFEN from 'fen-validator';
 
 function Board () {
   const newGame = useMemo(() => new Chess('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'), []);
@@ -11,15 +10,22 @@ function Board () {
   const [boardPosition, setBoardPosition] = useState(game.fen());
   const [fenHistory, setFenHistory] = useState({fens:[], pointer:0});
   const [fenInput, setFenInput] = useState('');
-  const [piecesAreMovable, setPiecesAreMovable] = useState(true);
-  // const [historyPointer, setHistoryPointer] = useState({index: 0, inPast:false})
+
+  // ALTERNATIVE REFERENCE TO AVOID RERENDERS ON INPUT CHANGE
+  // const inputRef = useRef < HTMLInputElement > ();
+  // <input
+  //   ref={inputRef}
+  //   style={{ ...inputStyle, width: "90%" }}
+  //   onChange={handleFenInputChange}
+  //   placeholder="Paste FEN to start analysing custom position"
+  // />
 
   console.log(fenHistory);
   console.log(game.isThreefoldRepetition());
   console.log(game.ascii());
 
   useEffect(() => {
-      const newHistory = getFenHistory(game);
+    const newHistory = getFenHistory(game);
     setFenHistory(() => { return { fens: newHistory, pointer: newHistory.length - 1 }});
   }, [game])
 
@@ -51,14 +57,23 @@ function Board () {
     return gameCopy;
   }
 
+  function moveFenHistoryPointer (newPointer) {
+    setFenHistory((history) => {
+      return { fens: history.fens, pointer: newPointer };
+    });
+  }
+
 
   function getFenHistory(game) {
     const gameHistory = game.history({verbose:true});
-    return gameHistory.length ? [gameHistory[0].before].concat(gameHistory.map(move => move.after)) : ['rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'];
+    return gameHistory.length ? [gameHistory[0].before].concat(gameHistory.map(move => move.after)) : [game.fen()];
   }
+    // return gameHistory.length ? [gameHistory[0].before].concat(gameHistory.map(move => move.after)) : ['rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'];
+
 
   // BOARD TO GAME FUNCTIONS
 
+  // Make a Move
   function onPieceDropHandler(sourceSquare, targetSquare, piece) {
     const move = makeAMove({
       from: sourceSquare,
@@ -71,6 +86,7 @@ function Board () {
     return true;
   }
 
+  // Reset Game
   function onResetHandler() {
 
     setGame((game) => {
@@ -81,6 +97,7 @@ function Board () {
     });
   }
 
+  // Undo last Move
   function onUndoHandler () {
     setGame((game) => {
       const gameCopy = copyGame(game);
@@ -90,37 +107,55 @@ function Board () {
     });
   }
 
+  // View Initial Position
+  function onBeginningHandler () {
+    setBoardPosition(() => {
+      const newPointer = 0;
+      moveFenHistoryPointer(newPointer);
+      return fenHistory.fens[`${newPointer}`];
+    });
+  }
+
+  // View Previous Position
   function onPreviousHandler() {
     if (fenHistory.pointer > 0) {
       setBoardPosition(() => {
         const newPointer = fenHistory.pointer -1;
-        setFenHistory((history) => {
-          return {fens: history.fens, pointer: newPointer}
-        })      
+        moveFenHistoryPointer(newPointer);
         return fenHistory.fens[`${newPointer}`]
       });
     }
   }
 
+  // View Next Position
   function onNextHandler() {
     if (fenHistory.pointer < fenHistory.fens.length -1) {
       setBoardPosition(() => {
         const newPointer = fenHistory.pointer +1;
-        setFenHistory((history) => {
-          return { fens: history.fens, pointer: newPointer }
-        })
+        moveFenHistoryPointer(newPointer);
         return fenHistory.fens[`${newPointer}`]
       });
     }
   }
 
-  // window.addEventListener("keydown", onPreviousHandler);
-  // window.addEventListener("keyup", onNextHandler);
-  // onKeyDown = { onPreviousHandler } onKeyUp = { onNextHandler }
+  // View Last Position
+  function onLastHandler() {
+    setBoardPosition(() => {
+      const newPointer = fenHistory.fens.length - 1;
+      moveFenHistoryPointer(newPointer);
+      return fenHistory.fens[`${newPointer}`];
+    });
+  }
+
+  // Load a new game from custom position
+  function onFenInputChange (e) {
+    setFenInput(e.target.value)
+  }
 
   function onFenSubmitHandler(event) {
     event.preventDefault();
     validateFen(fenInput).ok ? gameStartFromFen(fenInput) : alert('Invalid Fen');
+    setFenInput('');
   }
 
 
@@ -129,15 +164,24 @@ function Board () {
         <div className='board-wrapper' >
         <Chessboard id="BasicBoard" position={boardPosition} onPieceDrop={onPieceDropHandler} arePiecesDraggable={fenHistory.pointer === fenHistory.fens.length-1}/>
         </div>
-
+        <div className='game-navigation-buttons'>
         <button onClick={onResetHandler}>Reset</button>
         <button onClick={onUndoHandler}>Undo</button>
+        <button onClick={onBeginningHandler}>Beginning</button>
         <button onClick={onPreviousHandler}>Previous</button>
         <button onClick={onNextHandler}>Next</button>
-        <form onSubmit={onFenSubmitHandler}>
-        <input type='text' placeholder='Paste Fen here' onChange={e => setFenInput(e.target.value)} ></input>
-          <input type='submit' value='Load Fen'></input>
-        </form>
+        <button onClick={onLastHandler}>Last</button>
+        </div>
+        <div className='game-load-inputs'>
+          <form onSubmit={onFenSubmitHandler}>
+            <input type='text' placeholder='Paste Fen here' value={fenInput} onChange={onFenInputChange} ></input>
+            <input type='submit' value='Load Fen'></input>
+          </form>
+        <form onSubmit={() => { }}>
+            <input type='text' placeholder='Paste Pgn here' onChange={() => {}} ></input>
+            <input type='submit' value='Load Pgn'></input>
+          </form>
+        </div>
     </>
   )
 }
