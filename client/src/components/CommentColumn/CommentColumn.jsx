@@ -1,7 +1,7 @@
 import Comment from '../Comment/Comment';
 import './CommentColumn.css';
 
-function CommentColumn() {
+function CommentColumn({pgnComments, boardPosition}) {
 
   return (
     <>
@@ -12,10 +12,9 @@ function CommentColumn() {
         <h3>My Repertoire</h3>
       </div>
       <div className='comment-column'>
-        <Comment />
-        <Comment />
-        <Comment />
-        <Comment />
+        {pgnComments[boardPosition]?.map((fenComment,index) => <Comment key = {index} fenComment={fenComment}/>)}
+        {/* <Comment /> */}
+
       </div>
       <div className='comment-column-header'>
         <h3>Add Comment</h3>
