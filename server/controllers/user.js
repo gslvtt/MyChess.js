@@ -1,10 +1,10 @@
 const bcrypt = require('bcrypt');
-const User = require('./../models/user');
+const {User} = require('./../models/db');
 
 const create = async (req, res) => {
 
   const { email, password } = req.body;
-  const user = await User.findOne({ email: email });
+  const user = await User.findByPk(email);
   if (user)
     return res
       .status(409)
@@ -12,13 +12,13 @@ const create = async (req, res) => {
   try {
     if (password === '') throw new Error();
     const hash = await bcrypt.hash(password, 10);
-    const newUser = new User({
+    const newUser = await User.create({
       ...req.body,
       password: hash,
     });
-    const user = await newUser.save();
-    req.session.uid = user._id;
-    res.status(201).send(user);
+    req.session.uid = newUser.email;
+    console.log(req.session.uid)
+    res.status(201).send(newUser);
   } catch (error) {
     res.status(400).send({ error, message: 'Could not create user' });
   }
@@ -29,10 +29,10 @@ const login = async (req, res) => {
 
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email });
+    const user = await User.findByPk(email);
     const validatedPass = await bcrypt.compare(password, user.password);
     if (!validatedPass) throw new Error();
-    req.session.uid = user._id;
+    req.session.uid = user.email;
     res.status(200).send(user);
   } catch (error) {
     res
@@ -45,8 +45,8 @@ const login = async (req, res) => {
 const profile = async (req, res) => {
 
   try {
-    const { _id, firstName, lastName } = req.user;
-    const user = { _id, firstName, lastName };
+    const { email, firstName, lastName } = req.user;
+    const user = { email, firstName, lastName };
     res.status(200).send(user);
   } catch {
     res.status(404).send({ error, message: 'User not found' });

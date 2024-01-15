@@ -1,17 +1,20 @@
+require('dotenv').config()
 const fs = require('fs');
 const path = require('path');
 const { Sequelize } = require('sequelize');
+const USER = process.env.USER;
+const PASSWORD = process.env.PASSWORD;
 
 const config = {
   host: 'localhost',
   dialect: 'postgres'
 };
 
-const dbConnection = new Sequelize('mychess', 'bradipusr', 'codehype', config);
-console.log(dbConnection);
+const dbConnection = new Sequelize('mychess', USER, PASSWORD, config);
+// console.log(dbConnection);
 
 const files = fs.readdirSync(__dirname);
-console.log(files);
+// console.log(files);
 
 const db = {};
 
