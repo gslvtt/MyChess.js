@@ -22,14 +22,19 @@ for (const file of files) {
   if (file !== 'db.js') {
     const model = require(path.join(__dirname, file))(dbConnection, Sequelize.DataTypes);
     db[model.name] = model;
-    console.log(model.name);
   }
 }
 
 
-// for (const model in db) {
-//   if (db[model].associate) db[model].associate(db);
-// }
+for (const model in db) {
+  if (db[model].associate) db[model].associate(db);
+}
+
+// Object.keys(db).forEach(modelName => {
+//   if (db[modelName].associate) {
+//     db[modelName].associate(db);
+//   }
+// });
 
 db.dbConnection = dbConnection;
 db.Sequelize = Sequelize;

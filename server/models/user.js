@@ -1,6 +1,4 @@
 'use strict'
-// const { Sequelize, DataTypes } = require('sequelize');
-// const sequelize = new Sequelize('');
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
@@ -25,6 +23,10 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     // Other model options go here
   });
+
+  User.associate = function (models) {
+    User.hasMany(models.Comment)
+  }
   return User;
 }
 

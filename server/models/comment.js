@@ -1,9 +1,7 @@
 'use strict'
-// const { Sequelize, DataTypes } = require('sequelize');
-// const sequelize = new Sequelize('');
 
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define('User', {
+  const Comment = sequelize.define('Comment', {
     title: {
       type: DataTypes.STRING,
       allowNull: false
@@ -27,5 +25,10 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     // Other model options go here
   });
-  return User;
+
+  Comment.associate = function (models) {
+    Comment.belongsTo(models.User);
+  } 
+  return Comment;
 }
+

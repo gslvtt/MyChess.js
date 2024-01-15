@@ -1,6 +1,5 @@
 const bcrypt = require('bcrypt');
 const {User} = require('./../models/db');
-
 const create = async (req, res) => {
 
   const { email, password } = req.body;
@@ -46,7 +45,8 @@ const profile = async (req, res) => {
 
   try {
     const { email, firstName, lastName } = req.user;
-    const user = { email, firstName, lastName };
+    // CALL comments controller to fetch comments
+    const user = { firstName, lastName };
     res.status(200).send(user);
   } catch {
     res.status(404).send({ error, message: 'User not found' });
