@@ -13,6 +13,7 @@ function Board ({setPgnComments, setBoardPosition, boardPosition}) {
   const [fenInput, setFenInput] = useState('');
   const [pgnInput, setPgnInput] = useState('');
   //todo const [pgnComments, setPgnComments] = useState({});
+
   
   useEffect(() => {
     const newHistory = getFenHistory(game);
@@ -231,21 +232,21 @@ function Board ({setPgnComments, setBoardPosition, boardPosition}) {
         <Chessboard id="BasicBoard" position={boardPosition} onPieceDrop={onPieceDropHandler} arePiecesDraggable={fenHistory.pointer === fenHistory.fens.length-1}/>
         </div>
         <div className='game-navigation-buttons'>
-        <button onClick={onResetHandler}>Reset</button>
-        <button onClick={onUndoHandler}>Undo</button>
-        <button onClick={onBeginningHandler}>Beginning</button>
-        <button onClick={onPreviousHandler}>Previous</button>
-        <button onClick={onNextHandler}>Next</button>
-        <button onClick={onLastHandler}>Last</button>
+        <button className='navigation-button' onClick={onResetHandler}>Reset</button>
+        <button className='navigation-button' onClick={onUndoHandler}>Undo</button>
+        <button className='navigation-button' onClick={onBeginningHandler}>Beginning</button>
+        <button className='navigation-button' onClick={onPreviousHandler}>Previous</button>
+        <button className='navigation-button' onClick={onNextHandler}>Next</button>
+        <button className='navigation-button' onClick={onLastHandler}>Last</button>
         </div>
         <div className='game-load-inputs'>
           <form onSubmit={onFenSubmitHandler}>
-            <input type='text' placeholder='Paste Fen here' value={fenInput} onChange={onFenInputChange} ></input>
-          <input type='submit' value='Load Fen' onChange={onPgnInputChange}></input>
+            <input className='game-loader-input' type='text' placeholder='Paste Fen here' value={fenInput} onChange={onFenInputChange} ></input>
+            <input className='game-loader-button' type='submit' value='Load Fen' onChange={onPgnInputChange}></input>
           </form>
-        <form onSubmit={onPgnSubmitHandler}>
-          <input type='text' placeholder='Paste Pgn here' value={pgnInput} onChange={onPgnInputChange} ></input>
-            <input type='submit' value='Load Pgn'></input>
+          <form onSubmit={onPgnSubmitHandler}>
+            <input className = 'game-loader-input' type='text' placeholder='Paste Pgn here' value={pgnInput} onChange={onPgnInputChange} ></input>
+            <input className='game-loader-button'type='submit' value='Load Pgn'></input>
           </form>
         </div>
     </>

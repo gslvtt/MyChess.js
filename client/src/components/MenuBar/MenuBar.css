@@ -1,7 +1,63 @@
 .menu-wrapper {
   display: flex;
-  padding: 1rem;
+  padding: 0 ;
   height:5rem;
   width: 100%;
   border: 1px solid firebrick;
+  align-items:center;
+  justify-content: space-between;
+  position:relative;
+}
+
+.menu-sections {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width:60%;
+  height:100%;
+  flex-grow: 1;
+}
+
+.menu-user {
+  /* padding-left:6rem; */
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap:3rem;
+  padding-right: 3rem;
+  flex-grow: 1;
+  width: 20%;
+}
+
+.menu-wrapper h1 {
+  height:100%;
+  line-height: 5rem;
+  vertical-align: center;
+}
+.menu-wrapper h2 {
+  height: 100%;
+  line-height: 5rem;
+  vertical-align: center;
+}
+
+.menu-wrapper button {
+  height: 100%;
+  line-height: 5rem;
+  vertical-align: center;
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+  font-weight: bold;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  border: hidden;
+  padding-left:1rem;
+  padding-right:1rem;
+}
+
+.menu-wrapper button:hover {
+  background-color: black ;
+  /* bordercolor: #242424; */
 }

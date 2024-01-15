@@ -1,0 +1,23 @@
+.dropdown-menu {
+  position:absolute;
+  right: 0;
+  top: 4.9rem;
+  /* z-index: 1; */
+  background-color: #242424;
+  padding:1rem;
+}
+
+ul {
+  list-style-type: none;
+  font-size:x-large;
+  display: flex;
+  flex-direction: column;
+  gap:0.5rem;
+  margin-right:1rem;
+}
+
+li:hover {
+  background-color: rgba(128, 128, 128, .5);
+  cursor: pointer;
+}
+

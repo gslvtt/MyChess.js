@@ -6,6 +6,7 @@
   flex-direction: column;
   gap:0.1rem;
   background-color: rgba(128, 128, 128, .5);
+  /* position:relative; */
 
 }
 
@@ -15,13 +16,56 @@
   color: wheat;
 }
 
-.body {
+.text {
   color: beige;
   font-size: larger;
 }
 
+.meta {
+display:flex;
+justify-content: space-between;
+}
 .tags {
   font-style: italic;
   text-align: right;
   color: wheat;
+}
+
+.source {
+  font-style: italic;
+  text-align: right;
+  color: wheat;
+}
+
+/* .edit-delete-wrapper {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+} */
+
+.title-buttons-wrapper {
+  display : flex;
+  justify-content: space-between;  
+}
+
+.edit-delete-wrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-delete-button {
+  padding: 0.3rem;
+  /* width: 3rem; */
+  height: 2rem;
+  background-color: #242424;
+  color: rgba(255, 255, 255, 0.87);
+  font-weight: bold;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+.edit-delete-button:hover {
+  background-color: rgba(255, 255, 255, 0.87);
+  color: #242424;
 }
