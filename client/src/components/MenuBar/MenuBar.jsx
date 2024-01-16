@@ -1,10 +1,13 @@
 import UserDropdownMenu from '../UserDropdownMenu/UserDropdownMenu';
 import './MenuBar.css';
 import { useState } from 'react';
-function MenuBar({isAuthenticated, setIsAuthenticated, user, setUser}) {
+import { useSelector } from 'react-redux';
 
+function MenuBar() {
+  
   const [dropdownState, setDropdownState] = useState(false);
-  console.log(dropdownState);
+  const userFirstName = useSelector(state => state.user.firstName);
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
   const handleMouseEnterUser = () => {
     setDropdownState(true);
@@ -30,8 +33,8 @@ function MenuBar({isAuthenticated, setIsAuthenticated, user, setUser}) {
         <div className='menu-user'>
             <h2>Shortcuts</h2>
           <div onMouseEnter={handleMouseEnterUser} onMouseLeave={handleMouseLeaveUser}>
-            <button >{user.firstname || 'User'}</button>
-            {dropdownState && <UserDropdownMenu isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} setUser={setUser}/>}
+            <button >{userFirstName || 'User'}</button>
+            {dropdownState && <UserDropdownMenu />}
           </div>
         </div>
       </div>

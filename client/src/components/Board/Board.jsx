@@ -63,8 +63,9 @@ function Board ({setPgnComments, setBoardPosition, boardPosition}) {
           const gameProgress = importingGame.move(move.move);
           if (gameProgress !== null) {
             // Will have to check if key is already present and push when integrating multiple sources in a single object
-            comments[importingGame.fen()] = move.comments.map(comment=> {
-              return {title: '', text: comment.text, source: 'Pgn', tags:[] }
+            const currentFen = importingGame.fen();
+            comments[currentFen] = move.comments.map(comment=> {
+              return {title: '', text: comment.text, source: 'Pgn', tags:[], fen: currentFen }
             });
             return true;
           } else {
@@ -74,7 +75,7 @@ function Board ({setPgnComments, setBoardPosition, boardPosition}) {
         });
         if (valid) {
           const headers = parsedPgn[0].headers.reduce((str, header) => `${str}\n${header.name}: ${header.value}`, '');
-          comments[STARTING_FEN] = [{title: '', text : headers, source:'Pgn', tags: []}];
+          comments[STARTING_FEN] = [{title: '', text : headers, source:'Pgn', tags: [], fen: STARTING_FEN}];
           console.log(headers);
           setBoardPosition(importingGame.fen());
           setPgnComments(comments);

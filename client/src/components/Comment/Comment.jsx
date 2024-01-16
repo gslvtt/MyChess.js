@@ -1,20 +1,52 @@
 import './Comment.css';
+import apiService from '../../ApiService';
+import { useDispatch } from 'react-redux';
+import { commentDeleted } from '../../redux/userSlice';
 
-function Comment({fenComment, setView, setText, setTitle}) {
+function Comment({fenComment, setView, setTextInput, setTitleInput, setFenInput, setEditFormCommentId}) {
+  const dispatch = useDispatch();
+
+  function onAddButtonHandler() {
+    setTitleInput(fenComment.title || fenComment.source);
+    setTextInput(fenComment.text);
+    setFenInput(fenComment.fen.split(' ').slice(0,3).join(' '));
+    setView('add');
+  }
+
+  function onEditButtonHandler() {
+    setTitleInput(fenComment.title || fenComment.source);
+    setTextInput(fenComment.text);
+    setFenInput(fenComment.fen);
+    setEditFormCommentId(fenComment.id);
+    setView('edit');
+  }
+
+  async function onDeleteButtonHandler() {
+    const result = prompt('Are you sure you wish to delete this comment? Type "yes" to continue');
+    if(result === 'yes') {
+        const res = await apiService.deleteComment(fenComment);
+        console.log({ res });
+        if (res.error) {
+          alert(`${res.message}`);
+        } else {
+          dispatch(commentDeleted(fenComment));
+        }
+        setTitleInput('');
+        setTextInput('');
+
+      setView('list');
+    }
+  }
 
   return (
     <>
       <div className='comment-wrapper'>
-        {/* <div className='edit-delete-wrapper'>
-        <button className='edit-delete-button'>Edit</button>
-        <button className='edit-delete-button'>Delete</button>
-        </div> */}
         <div className='title-buttons-wrapper'>
           <h3 className='title'>{fenComment.title || fenComment.source}</h3>
           <span className='edit-delete-wrapper'>
-            {fenComment.source !== 'MyCollection' && <button className='edit-delete-button'>Add</button>}
-            <button className='edit-delete-button'>Edit</button>
-            <button className='edit-delete-button'>Delete</button>
+            {fenComment.source !== 'myCollection' && <button className='edit-delete-button' onClick={onAddButtonHandler}>Add</button>}
+            {fenComment.source !== 'Pgn' && <button className='edit-delete-button' onClick={onEditButtonHandler}>Edit</button>}
+            {fenComment.source !== 'Pgn' && <button className='edit-delete-button' onClick={onDeleteButtonHandler}>Delete</button>}
           </span>
         </div>
         {/* <p className='body'>{fenComment.text}</p> */}
@@ -25,7 +57,6 @@ function Comment({fenComment, setView, setText, setTitle}) {
           <span className='source'>{fenComment.source}</span>
           <span className='tags'>{fenComment.tags.reduce((str, tag) => `${str}, ${tag}`, '')}</span>
         </div>
-        {/* <p className='tags'>{fenComment.tags.reduce((str, tag) => `${str}, ${tag}`, '')}</p> */}
       </div>
 
       {/* <div className='comment-wrapper'>

@@ -1,28 +1,29 @@
 import { useState } from 'react';
-import './AddComment.css'
+import './EditComment.css'
 import apiService from '../../ApiService';
 import { useDispatch } from 'react-redux';
-import { commentAdded } from '../../redux/userSlice';
+import { commentEdited } from '../../redux/userSlice';
 
-function AddComment ({setView, titleInput, setTitleInput, textInput, setTextInput, fenInput, setFenInput}) {
+function EditComment ({setView, titleInput, setTitleInput, textInput, setTextInput, fenInput, setFenInput, editFormCommentId}) {
   const dispatch = useDispatch();
+
   console.log({titleInput});
   console.log({textInput});
-  console.log({fenInput});
 
-  async function addNewCommentHandler (event) {
+  async function editCommentHandler (event) {
     event.preventDefault();
     if (titleInput !== '' && textInput !== '') {
 
       // Add Comment request
-      const comment = {title : titleInput, text:textInput, fen:fenInput, source:'myCollection', tags: []}
-      const res = await apiService.addComment(comment);
-      // console.log({ res });
+      const comment = { title: titleInput, text: textInput, fen: fenInput, source: 'myCollection', tags: [], id : editFormCommentId  }
+      const res = await apiService.editComment(comment);
+      console.log({ res });
       if (res.error) {
         alert(`${res.message}`);
         // setState(initialState); FOR INPUT FORM ONCE IMPLEMENTED
       } else {
-        dispatch(commentAdded(res));
+        dispatch(commentEdited(comment));
+        //! FETCH COMMENTS, user name.
       }
       setTitleInput('');
       setTextInput('');
@@ -46,8 +47,8 @@ function AddComment ({setView, titleInput, setTitleInput, textInput, setTextInpu
 
   return( 
   <>
-  <div className="add-comment-container">
-    <form onSubmit={addNewCommentHandler}>
+  <div className="edit-comment-container">
+    <form onSubmit={editCommentHandler}>
       <div>
         <h4>Title</h4>
         <input type='text' className='title-input' value = {titleInput} onChange={onTitleInputChange}></input>
@@ -58,7 +59,7 @@ function AddComment ({setView, titleInput, setTitleInput, textInput, setTextInpu
       </div>
       <div>
         <h4>Fen</h4>
-        <input type='text' className='title-input' value={fenInput} onChange={onFenInputChange} disabled></input>
+        <input type='text' className='title-input' value={fenInput} onChange={onFenInputChange}></input>
       </div>
       <div>
         <input type='submit' value='Save' className="save-button"></input>
@@ -69,4 +70,4 @@ function AddComment ({setView, titleInput, setTitleInput, textInput, setTextInpu
   )
 }
 
-export default AddComment;
+export default EditComment;

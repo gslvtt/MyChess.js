@@ -50,4 +50,51 @@ apiService.logout = () => {
     .catch((err) => console.log(err));
 };
 
+apiService.getComments = () => {
+  return fetch(`${BASE_URL}/me/getComments`, {
+    method: 'GET',
+    credentials: 'include',
+    mode: 'cors',
+    headers: { 'Content-Type': 'application/json' },
+  })
+    .then((res) => res.json())
+    .catch((err) => console.log(err));
+};
+
+apiService.addComment = (comment) => {
+  return fetch(`${BASE_URL}/me/addComment`, {
+    method: 'POST',
+    credentials: 'include',
+    mode: 'cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(comment)
+  })
+    .then((res) => res.json())
+    .catch((err) => console.log(err));
+};
+
+apiService.editComment = (comment) => {
+  return fetch(`${BASE_URL}/me/editComment`, {
+    method: 'POST',
+    credentials: 'include',
+    mode: 'cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(comment)
+  })
+    .then((res) => res.json())
+    .catch((err) => console.log(err));
+};
+
+apiService.deleteComment = (comment) => {
+  return fetch(`${BASE_URL}/me/deleteComment`, {
+    method: 'POST',
+    credentials: 'include',
+    mode: 'cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(comment)
+  })
+    .then((res) => res.json())
+    .catch((err) => console.log(err));
+};
+
 export default apiService;

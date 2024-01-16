@@ -5,6 +5,8 @@ const { Sequelize } = require('sequelize');
 const USER = process.env.USER;
 const PASSWORD = process.env.PASSWORD;
 
+console.log(Sequelize.DataTypes.ARRAY);
+
 const config = {
   host: 'localhost',
   dialect: 'postgres'
@@ -29,12 +31,6 @@ for (const file of files) {
 for (const model in db) {
   if (db[model].associate) db[model].associate(db);
 }
-
-// Object.keys(db).forEach(modelName => {
-//   if (db[modelName].associate) {
-//     db[modelName].associate(db);
-//   }
-// });
 
 db.dbConnection = dbConnection;
 db.Sequelize = Sequelize;

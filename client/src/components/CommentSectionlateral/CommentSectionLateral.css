@@ -9,12 +9,14 @@
   display: none;
 }
 .comment-column-outer-wrapper {
-  height: 60%;
+  /* height: 60%; DEFAULT SIZE WHEN TAG FILTERS ARE OPEN, FOR NOW USE TEMPORARY 80*/
+  height:80%;
   border: 1px solid firebrick;
 }
 
 
 .comment-filters-outer-wrapper {
-  height:40%;
+  /* height:40%; DEFAULT SIZE WHEN TAG FILTERS ARE OPEN, FOR NOW USE TEMPORARY 20*/
+  height: 20%;
   border: 1px solid firebrick;
 }

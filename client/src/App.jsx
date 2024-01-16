@@ -1,25 +1,26 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
+import { reloaded } from './redux/userSlice';
+import apiService from './ApiService';
 import './App.css'
 import AnalysisPage from './pages/AnalysisPage';
 import MenuBar from './components/MenuBar/MenuBar';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState({firstName: '', lastName: ''})
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const getProfile = async () => {
       const userInfo = await apiService.profile();
+      console.log(userInfo);
       if (userInfo) {
         const { firstName, lastName } = userInfo;
-        setState((prevState) => {
-          return {
-            ...prevState,
-            firstName,
-            lastName,
-          };
-        });
+        const myCollection = await apiService.getComments();
+        if (myCollection) {
+          dispatch(reloaded({firstName : firstName, lastName : lastName, myCollection: myCollection, isAuthenticated:true}));
+        } else {
+          console.log('No collection found 😞');
+        }
       } else {
         console.log('No user info found 😞');
       }
@@ -30,8 +31,8 @@ function App() {
   return (
     <>
       <div className='app-wrapper'>
-        <MenuBar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} user={user} setUser={setUser}/>
-        <AnalysisPage isAuthenticated={isAuthenticated} />
+        <MenuBar/>
+        <AnalysisPage/>
       </div>
     </>
   )

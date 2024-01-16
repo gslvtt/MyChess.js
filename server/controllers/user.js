@@ -32,7 +32,8 @@ const login = async (req, res) => {
     const validatedPass = await bcrypt.compare(password, user.password);
     if (!validatedPass) throw new Error();
     req.session.uid = user.email;
-    res.status(200).send(user);
+    const {firstName, lastName} = user;
+    res.status(200).send({firstName, lastName});
   } catch (error) {
     res
       .status(401)
@@ -44,11 +45,11 @@ const login = async (req, res) => {
 const profile = async (req, res) => {
 
   try {
-    const { email, firstName, lastName } = req.user;
+    const { firstName, lastName } = req.user;
     // CALL comments controller to fetch comments
     const user = { firstName, lastName };
     res.status(200).send(user);
-  } catch {
+  } catch (error) {
     res.status(404).send({ error, message: 'User not found' });
   }
 
