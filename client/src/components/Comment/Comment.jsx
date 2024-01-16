@@ -9,7 +9,7 @@ function Comment({fenComment, setView, setTextInput, setTitleInput, setFenInput,
   function onAddButtonHandler() {
     setTitleInput(fenComment.title || fenComment.source);
     setTextInput(fenComment.text);
-    setFenInput(fenComment.fen.split(' ').slice(0,3).join(' '));
+    setFenInput(fenComment.fen.split(' ').slice(0,4).join(' '));
     setView('add');
   }
 

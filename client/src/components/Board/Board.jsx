@@ -74,7 +74,9 @@ function Board ({setPgnComments, setBoardPosition, boardPosition}) {
           // return gameProgress !== null ? true : false
         });
         if (valid) {
-          const headers = parsedPgn[0].headers.reduce((str, header) => `${str}\n${header.name}: ${header.value}`, '');
+          const headers = parsedPgn[0].headers.slice(1).reduce((str, header) => `${str}\n${header.name}: ${header.value}`, '');
+          console.log(parsedPgn[0]);
+          console.log(headers[0]);
           comments[STARTING_FEN] = [{title: '', text : headers, source:'Pgn', tags: [], fen: STARTING_FEN}];
           console.log(headers);
           setBoardPosition(importingGame.fen());

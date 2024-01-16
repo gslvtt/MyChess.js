@@ -5,8 +5,6 @@ const { Sequelize } = require('sequelize');
 const USER = process.env.USER;
 const PASSWORD = process.env.PASSWORD;
 
-console.log(Sequelize.DataTypes.ARRAY);
-
 const config = {
   host: 'localhost',
   dialect: 'postgres'
