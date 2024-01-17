@@ -1,10 +1,11 @@
 import AnalysisScreen from "../components/AnalysisScreen/AnalysisScreen";
+import './Page.css';
 
 function AnalysisPage() {
 
   return (
     <>
-      <div>
+      <div className="page">
         <AnalysisScreen/>
       </div>
     </>
