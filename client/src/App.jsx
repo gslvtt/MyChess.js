@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux';
 import { reloaded } from './redux/userSlice';
 import apiService from './ApiService';
 import './App.css'

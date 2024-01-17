@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+// loggedIn reducer not being used for now
 
 const initialState = { 
   firstName : '',
@@ -80,32 +81,3 @@ export const userSlice = createSlice({
 export default userSlice.reducer;
 
 export const { loggedIn, loggedOut, reloaded, commentAdded, commentEdited, commentDeleted} = userSlice.actions;
-
-
-  // commentEdited: (state, action) => {
-  //   const collection = Object.assign({}, state.myCollection);
-  //   const index = collection[action.fen].findIndex((comment) => comment.id === action.id);
-  //   collection[action.fen][index] = action;
-  //   return {
-  //     ...state,
-  //     myCollection: collection
-  //   }
-  // },
-  //   commentDeleted: (state, action) => {
-  //     const collection = Object.assign({}, state.myCollection);
-  //     const index = collection[action.fen].findIndex((comment) => comment.id === action.id);
-  //     collection[action.fen][index] = action;
-  //     return {
-  //       ...state,
-  //       myCollection: collection
-  //     }
-  //   } 
-
-  // commentAdded: (state, action) => {
-  //   const collection = Object.assign(state.myCollection);
-  //   collection[action.fen] ? collection[action.fen].push(action) : collection[action.fen] = [action];
-  //   return {
-  //     ...state,
-  //     myCollection: collection
-  //   }
-  // },

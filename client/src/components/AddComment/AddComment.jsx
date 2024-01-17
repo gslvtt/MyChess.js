@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import './AddComment.css'
 import apiService from '../../ApiService';
 import { useDispatch } from 'react-redux';
@@ -17,10 +16,8 @@ function AddComment ({setView, titleInput, setTitleInput, textInput, setTextInpu
       // Add Comment request
       const comment = {title : titleInput, text:textInput, fen:fenInput, source:'myCollection', tags: []}
       const res = await apiService.addComment(comment);
-      // console.log({ res });
       if (res.error) {
         alert(`${res.message}`);
-        // setState(initialState); FOR INPUT FORM ONCE IMPLEMENTED
       } else {
         dispatch(commentAdded(res));
       }

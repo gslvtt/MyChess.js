@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import './EditComment.css'
 import apiService from '../../ApiService';
 import { useDispatch } from 'react-redux';
@@ -14,13 +13,12 @@ function EditComment ({setView, titleInput, setTitleInput, textInput, setTextInp
     event.preventDefault();
     if (titleInput !== '' && textInput !== '') {
 
-      // Add Comment request
+      // Edit Comment request
       const comment = { title: titleInput, text: textInput, fen: fenInput, source: 'myCollection', tags: [], id : editFormCommentId  }
       const res = await apiService.editComment(comment);
       console.log({ res });
       if (res.error) {
         alert(`${res.message}`);
-        // setState(initialState); FOR INPUT FORM ONCE IMPLEMENTED
       } else {
         dispatch(commentEdited(comment));
         //! FETCH COMMENTS, user name.

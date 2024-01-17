@@ -16,7 +16,6 @@ const create = async (req, res) => {
       password: hash,
     });
     req.session.uid = newUser.email;
-    console.log(req.session.uid)
     res.status(201).send(newUser);
   } catch (error) {
     res.status(400).send({ error, message: 'Could not create user' });
@@ -46,7 +45,6 @@ const profile = async (req, res) => {
 
   try {
     const { firstName, lastName } = req.user;
-    // CALL comments controller to fetch comments
     const user = { firstName, lastName };
     res.status(200).send(user);
   } catch (error) {

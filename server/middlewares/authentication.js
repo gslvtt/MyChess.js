@@ -8,7 +8,6 @@ const authMiddleware = async (req, res, next) => {
     const user = await User.findOne({where : {email : uid}});
     if (!user) throw new Error();
     req.user = user;
-    console.log('authenticated!');
     next();
   } catch (error) {
     return res.sendStatus(401);
