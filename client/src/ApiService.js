@@ -1,3 +1,4 @@
+// SERVER URL: update if necessary
 const BASE_URL = 'http://localhost:3000';
 
 // possible to refactor into a 'fetch factory' to reduce repetition

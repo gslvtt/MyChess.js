@@ -19,15 +19,6 @@ function Board ({setPgnComments, setBoardPosition, boardPosition}) {
 
   const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
   
-  // ALTERNATIVE REFERENCE TO AVOID RERENDERS ON INPUT CHANGE
-  // const inputRef = useRef < HTMLInputElement > ();
-  // <input
-  //   ref={inputRef}
-  //   style={{ ...inputStyle, width: "90%" }}
-  //   onChange={handleFenInputChange}
-  //   placeholder="Paste FEN to start analysing custom position"
-  // />
-  
   // GAME TO VIEW FUNCTIONS
 
   // Load Game from Fen

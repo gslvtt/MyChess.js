@@ -4,11 +4,12 @@ const { dbConnection } = require('./models/db.js');
 const session = require('express-session');
 const router = require('./router');
 const app = express();
-const PORT = 3000;
+const SERVER_PORT = process.env.SERVER_PORT || 3000;
 const SECRET = process.env.SECRET || 'SECRET';
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
 const corsConfig = {
-  origin: 'http://localhost:5173',
+  origin: CLIENT_URL,
   credentials : true
 }
 
@@ -25,7 +26,7 @@ app.use(cors(corsConfig))
           maxAge: 1000 * 60 * 60, // 1hr
           sameSite: true,
           httpOnly: true,
-          // we would want to set secure=true in a production environment
+          // Set to True for https
           secure: false,
         },
       })
@@ -47,11 +48,11 @@ async function bootstrap() {
     console.error('Unable to connect to the database:', error);
   }
 
-  return app.listen(PORT, (err) => {
+  return app.listen(SERVER_PORT, (err) => {
     if (err) {
       console.log(`Sorry, something went wrong! ${err}`);
     } else {
-      console.log(`MyChess listening on port ${PORT}`);
+      console.log(`MyChess listening on port ${SERVER_PORT}`);
     }
   });
 }

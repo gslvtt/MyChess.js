@@ -1,0 +1,7 @@
+USER=your_postgres_user
+PASSWORD=your_postgres_user_password
+DB_HOST=localhost
+DB_NAME=your_database_name
+SECRET=your_secret_key
+SERVER_PORT=3000
+CLIENT_URL=http://localhost:5173

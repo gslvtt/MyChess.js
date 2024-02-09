@@ -7,7 +7,6 @@ function MenuBar() {
   
   const [dropdownState, setDropdownState] = useState(false);
   const userFirstName = useSelector(state => state.user.firstName);
-  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
   const handleMouseEnterUser = () => {
     setDropdownState(true);

@@ -21,7 +21,6 @@ function EditComment ({setView, titleInput, setTitleInput, textInput, setTextInp
         alert(`${res.message}`);
       } else {
         dispatch(commentEdited(comment));
-        //! FETCH COMMENTS, user name.
       }
       setTitleInput('');
       setTextInput('');

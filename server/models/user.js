@@ -18,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
     lastName: {
       type: DataTypes.STRING,
       allowNull: false
-      // allowNull defaults to true
     }
   }, {
     // Other model options go here

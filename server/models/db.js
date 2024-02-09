@@ -4,13 +4,16 @@ const path = require('path');
 const { Sequelize } = require('sequelize');
 const USER = process.env.USER;
 const PASSWORD = process.env.PASSWORD;
+const DB_NAME = process.env.DB_NAME;
+const DB_HOST = process.env.DB_HOST;
+const DIALECT = 'postgres';
 
 const config = {
-  host: 'localhost',
-  dialect: 'postgres'
+  host: DB_HOST,
+  dialect: DIALECT
 };
 
-const dbConnection = new Sequelize('mychess', USER, PASSWORD, config);
+const dbConnection = new Sequelize(DB_NAME, USER, PASSWORD, config);
 const files = fs.readdirSync(__dirname);
 const db = {};
 

@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-// loggedIn reducer not being used for now
 
 const initialState = { 
   firstName : '',
@@ -12,14 +11,6 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers : {
-    loggedIn: (state, action) => {
-      return {
-        ...state,
-        isAuthenticated : true,
-        firstName: action.payload.firstName,
-        lastName: action.payload.lastName
-      }
-    },
     loggedOut: () => {
       return {
         isAuthenticated : false,
@@ -80,4 +71,4 @@ export const userSlice = createSlice({
 
 export default userSlice.reducer;
 
-export const { loggedIn, loggedOut, reloaded, commentAdded, commentEdited, commentDeleted} = userSlice.actions;
+export const { loggedOut, reloaded, commentAdded, commentEdited, commentDeleted} = userSlice.actions;

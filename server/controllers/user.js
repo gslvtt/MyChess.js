@@ -2,13 +2,13 @@ const bcrypt = require('bcrypt');
 const {User} = require('./../models/db');
 const create = async (req, res) => {
 
+  try {
   const { email, password } = req.body;
   const user = await User.findByPk(email);
   if (user)
     return res
       .status(409)
       .send({ error: '409', message: 'User already exists' });
-  try {
     if (password === '') throw new Error();
     const hash = await bcrypt.hash(password, 10);
     const newUser = await User.create({
@@ -54,6 +54,7 @@ const profile = async (req, res) => {
 };
 
 const logout = (req, res) => {
+  try {
 
   req.session.destroy((error) => {
     if (error) {
@@ -65,7 +66,9 @@ const logout = (req, res) => {
       res.status(200).send({ message: 'Logout successful' });
     }
   });
-
+  } catch (error) {
+    res.status(404).send({ error, message: 'Something went wrong' });
+  }
 };
 
 module.exports = { create, login, profile, logout };
