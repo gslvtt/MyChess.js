@@ -2,6 +2,8 @@
 
 Author: gslvtt (github)
 
+![Screenshot](<Screenshot from 2024-02-11 23-08-22.png>)
+
 ## Setup
 The project uses **Vite**, **React** and **redux-toolkit** on the front-end, and **express** and **posgreSQL** on the backend.
 
@@ -15,7 +17,7 @@ The project uses **Vite**, **React** and **redux-toolkit** on the front-end, and
 - run ```npm run dev``` in the client directory
 
 While the Login and Register Forms are still not implemented
-- Register a new user using postman or similar using the following type as a body {
+- Register a new user using postman or similar sending the following post request to route http://localhost:3000/register {
   "email" : "xxxx@yyyy.zzz",
   "password" : "xxxxxx",
   "firstName" : "xxxxxx",
