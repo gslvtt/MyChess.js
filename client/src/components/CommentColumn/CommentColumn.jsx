@@ -5,7 +5,7 @@ import EditComment from '../EditComment/EditComment';
 import './CommentColumn.css';
 import { useSelector } from 'react-redux';
 
-function CommentColumn({pgnComments, boardPosition}) {
+function CommentColumn() {
   const [view, setView] = useState('list');
   const [titleInput, setTitleInput] = useState('');
   const [textInput, setTextInput] = useState('');
@@ -13,6 +13,9 @@ function CommentColumn({pgnComments, boardPosition}) {
   const [editFormCommentId, setEditFormCommentId] = useState('');
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   const myCollection = useSelector(state => state.user.myCollection);
+  const gameHistory = useSelector(state => state.analysisBoard.gameHistory);
+  const pgnComments = useSelector(state => state.analysisBoard.pgnComments)
+  const boardPosition = gameHistory.fenHistory[gameHistory.pointer]
 
   function onAddButtonHandler () {
     if (isAuthenticated) {

@@ -1,45 +1,63 @@
 import { createSlice } from '@reduxjs/toolkit';
-
+const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const initialState = {
-  gameHistory: { fenHistory: [], pointer: 0 },
+  gameHistory: { fenHistory: [STARTING_FEN], pointer: 0 },
+  pgnComments: {}
 };
 
 export const analysisBoardSlice = createSlice({
   name: 'analysisBoard',
   initialState,
   reducers: {
-    moveMade : (state, action) => {
+
+    gameUpdated : (state, action) => {
       return {
         ...state,
         gameHistory : action.payload
       }
     },
+
+    pgnCommentsUpdated : (state, action) => {
+      return {
+        ...state,
+        pgnComments: action.payload
+      }
+    },
+
     pointedToPrevious : (state) => {
-      if (state.gameHistory.pointer > 0) {
+      const currentPointer = state.gameHistory.pointer;
+      if (currentPointer > 0) {
         return {
           ...state,
           gameHistory: {
             ...state.gameHistory,
-            pointer: state.gameHistory.pointer - 1
+            pointer: currentPointer - 1
           }
         }
       }
       return state
     },
+
     pointedToNext: (state) => {
-      if (state.gameHistory.pointer < state.gameHistory.fenHistory.length - 1) {
+      const currentPointer = state.gameHistory.pointer;
+      const historyLength = state.gameHistory.fenHistory.length;
+
+      if (currentPointer < historyLength - 1) {
         return {
           ...state,
           gameHistory: {
             ...state.gameHistory,
-            pointer: state.gameHistory.pointer + 1
+            pointer: currentPointer + 1
           }
         }
       }
       return state
     },
+
     pointedToBeginning: (state) => {
-      if (state.gameHistory.pointer > 0 ) {
+      const currentPointer = state.gameHistory.pointer;
+
+      if (currentPointer > 0 ) {
         return {
           ...state,
           gameHistory: {
@@ -50,13 +68,17 @@ export const analysisBoardSlice = createSlice({
       }
       return state
     },
+
     pointedToLast: (state) => {
-      if (state.gameHistory.pointer < state.gameHistory.fenHistory.length - 1) {
+      const currentPointer = state.gameHistory.pointer;
+      const historyLength = state.gameHistory.fenHistory.length;
+
+      if (currentPointer < historyLength - 1) {
         return {
           ...state,
           gameHistory: {
             ...state.gameHistory,
-            pointer: state.gameHistory.fenHistory.length - 1
+            pointer: historyLength - 1
           }
         }
       }
@@ -67,4 +89,4 @@ export const analysisBoardSlice = createSlice({
 
 export default analysisBoardSlice.reducer;
 
-export const { moveMade, pointedToBeginning, pointedToPrevious, pointedToNext, pointedToLast } = analysisBoardSlice.actions;
+export const { gameUpdated, pointedToBeginning, pointedToPrevious, pointedToNext, pointedToLast, pgnCommentsUpdated } = analysisBoardSlice.actions;

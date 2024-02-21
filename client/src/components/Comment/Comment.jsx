@@ -53,9 +53,9 @@ function Comment({fenComment, setView, setTextInput, setTitleInput, setFenInput,
             {fenComment.source !== 'Pgn' && <button className='edit-delete-button' onClick={onDeleteButtonHandler}>Delete</button>}
           </span>
         </div>
-        <p className='text'>{fenComment?.text.split('\n').map((line, index) => (
+        <div className='text'>{fenComment?.text.split('\n').map((line, index) => (
           <p key={index}>{line}</p>
-        ))}</p>
+        ))}</div>
         <div className='meta'>
           <span className='source'>{fenComment.source}</span>
           <span className='tags'>{fenComment.tags.reduce((str, tag) => `${str}, ${tag}`, '')}</span>
