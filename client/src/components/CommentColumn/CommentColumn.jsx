@@ -37,8 +37,6 @@ function CommentColumn() {
     return undefined;
   }
 
-  console.log(filterCollection());
-
   return (
     <>
     

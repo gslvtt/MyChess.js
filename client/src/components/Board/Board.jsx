@@ -2,11 +2,12 @@ import { useState, useMemo } from 'react'
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 import { validateFen } from 'chess.js';
-import { parse } from 'pgn-parser';
 import { useSelector, useDispatch } from 'react-redux'
+import { gameFromPgn } from '../../utils/boardUtils';
 
 import './Board.css'
-import { gameUpdated, pgnCommentsUpdated, pointedToBeginning, pointedToLast, pointedToNext, pointedToPrevious } from '../../redux/analysisBoardSlice';
+import { gameUpdated, moveMade, moveUndone, pgnCommentsUpdated } from '../../redux/analysisBoardSlice';
+import BoardNavigationButtons from '../BoardNavigationButtons/BoardNavigationButtons';
 
 function Board() {
   const currentGame = useMemo(() => new Chess('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'), []);
@@ -16,58 +17,31 @@ function Board() {
   const gameHistory = useSelector(state => state.analysisBoard.gameHistory);
   const dispatch = useDispatch();
 
-  const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-
   // GAME TO VIEW FUNCTIONS
-  function updateGame (game) {
+  function updateGame (game, gameComments) {
     const fenHistory = getFenHistory(game);
     dispatch(gameUpdated({ fenHistory, pointer: fenHistory.length - 1 }))
+    dispatch(pgnCommentsUpdated(gameComments || {}));
   }
 
   // Load Game from Fen
-  function gameStartFromFen(fen) {
-    currentGame.load(fen)
-    updateGame(currentGame);
+  function gameStartFromFen(fen, game) {
+    game.load(fen)
+    updateGame(game);
+    setFenInput('');
   }
 
-  async function gameFromPgn(pgn) {
-
-    try {
-      const parsedPgn = parse(pgn);
-        currentGame.reset()
-        const comments = {};
-        const valid = parsedPgn[0].moves.every(move => {
-          const gameProgress = currentGame.move(move.move);
-          if (gameProgress !== null) {
-            // Will have to check if key is already present and push when integrating multiple sources in a single object
-            const currentFen = currentGame.fen();
-            comments[currentFen] = move.comments.filter(comment => comment.text).map(comment => {
-              return { title: '', text: comment.text, source: 'Pgn', tags: [], fen: currentFen }
-            });
-            return true;
-          } else {
-            return false;
-          }
-        });
-        if (valid) {
-          const headers = parsedPgn[0].headers.slice(1).reduce((str, header) => `${str}\n${header.name}: ${header.value}`, '');
-          comments[STARTING_FEN] = [{ title: '', text: headers, source: 'Pgn', tags: [], fen: STARTING_FEN }];
-          dispatch(pgnCommentsUpdated(comments))
-          setPgnInput('');
-          updateGame(currentGame);
-        } else throw new Error('Pgn Not valid')
-    } catch (error) {
-      currentGame.reset();
-      updateGame(currentGame);
-      alert('Invalid  or Incompatible Pgn');
-      console.log(error);
-    }
+  // Load Game from Fen
+  function loadGame(gameData) {
+    updateGame(gameData.game, gameData.comments);
   }
+
 
   // Make a Move (triggered on piece drop)
   function makeAMove(move, game) {
     if (game.isGameOver()) return false;
-    const result = game.move(move)
+    const result = game.move(move);
+    dispatch(moveMade(game.fen()))
     // THIS RESULT ONLY CONTROLS PREMOVE LOGIC!
     return result; // null if the move was illegal, the move object if the move was legal
   }
@@ -90,8 +64,7 @@ function Board() {
     }, currentGame);
     // illegal move
 
-    if (move === null) return false;
-    updateGame(currentGame);
+    if (move === null || currentGame.isGameOver()) return false;
     return true;
   }
 
@@ -105,24 +78,7 @@ function Board() {
   // Undo last Move
   function onUndoHandler() {
     currentGame.undo();
-    updateGame(currentGame)
-  }
-
-  // GAME NAVIGATION HANDLERS
-  function onBeginningHandler() {
-    dispatch(pointedToBeginning());
-  }
-
-  function onPreviousHandler() {
-    dispatch(pointedToPrevious())
-  }
-
-  function onNextHandler() {
-    dispatch(pointedToNext())
-  }
-
-  function onLastHandler() {
-    dispatch(pointedToLast())
+    dispatch(moveUndone())
   }
 
   // BUTTON AND FORM FUNCTIONS
@@ -137,14 +93,19 @@ function Board() {
 
   function onFenSubmitHandler(event) {
     event.preventDefault();
-    validateFen(fenInput).ok ? gameStartFromFen(fenInput) : alert('Invalid Fen');
-    setFenInput('');
+    if (validateFen(fenInput).ok) {
+      gameStartFromFen(fenInput, currentGame);
+    } else { alert('Invalid Fen') }
   }
 
-  function onPgnSubmitHandler(event) {
+  async function onPgnSubmitHandler(event) {
     event.preventDefault();
-    gameFromPgn(pgnInput);
-    setPgnInput('');
+    const importedGame = await gameFromPgn(pgnInput, currentGame);
+    loadGame(importedGame);
+
+    if (importedGame.valid) {
+      setPgnInput('');
+    }
   }
 
   return (
@@ -155,11 +116,8 @@ function Board() {
       <div className='game-navigation-buttons'>
         <button className='navigation-button' onClick={onResetHandler}>Reset</button>
         <button className='navigation-button' onClick={onUndoHandler}>Undo</button>
-        <button className='navigation-button' onClick={onBeginningHandler}>Beginning</button>
-        <button className='navigation-button' onClick={onPreviousHandler}>Previous</button>
-        <button className='navigation-button' onClick={onNextHandler}>Next</button>
-        <button className='navigation-button' onClick={onLastHandler}>Last</button>
       </div>
+      <BoardNavigationButtons/>
       <div className='game-load-inputs'>
         <form onSubmit={onFenSubmitHandler}>
           <input className='game-loader-input' type='text' placeholder='Paste Fen here' value={fenInput} onChange={onFenInputChange} ></input>

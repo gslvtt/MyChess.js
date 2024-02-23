@@ -9,6 +9,37 @@ export const analysisBoardSlice = createSlice({
   name: 'analysisBoard',
   initialState,
   reducers: {
+    moveMade : (state, action) => {
+      const historyLength = state.gameHistory.fenHistory.length;
+
+      if(action.payload !== state.gameHistory.fenHistory[historyLength]) {
+        return {
+          ...state,
+          gameHistory : {
+            pointer: historyLength,
+            fenHistory : [
+              ...state.gameHistory.fenHistory,
+              action.payload
+            ]
+          }
+        }
+      }
+      return state;
+    },
+
+    moveUndone : (state) => {
+      const historyLength = state.gameHistory.fenHistory.length;
+
+      if (historyLength > 1) {
+        return {
+          ...state,
+          gameHistory: {
+            pointer: historyLength - 2,
+            fenHistory: state.gameHistory.fenHistory.slice(0, historyLength - 1)
+          }
+        }
+      }
+    },
 
     gameUpdated : (state, action) => {
       return {
@@ -89,4 +120,4 @@ export const analysisBoardSlice = createSlice({
 
 export default analysisBoardSlice.reducer;
 
-export const { gameUpdated, pointedToBeginning, pointedToPrevious, pointedToNext, pointedToLast, pgnCommentsUpdated } = analysisBoardSlice.actions;
+export const { moveMade, moveUndone, gameUpdated, pointedToBeginning, pointedToPrevious, pointedToNext, pointedToLast, pgnCommentsUpdated } = analysisBoardSlice.actions;
