@@ -1,106 +1,56 @@
-import { useState, useMemo, useEffect } from 'react'
-import './Board.css'
+import { useState, useMemo } from 'react'
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 import { validateFen } from 'chess.js';
-import { parse } from 'pgn-parser';
+import { useSelector, useDispatch } from 'react-redux'
+import { gameFromPgn } from '../../utils/boardUtils';
 
-function Board ({setPgnComments, setBoardPosition, boardPosition}) {
-  const newGame = useMemo(() => new Chess('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'), []);
-  const [game, setGame] = useState(newGame);
-  const [fenHistory, setFenHistory] = useState({fens:[], pointer:0});
+import './Board.css'
+import { gameUpdated, moveMade, moveUndone, pgnCommentsUpdated } from '../../redux/analysisBoardSlice';
+import BoardNavigationButtons from '../BoardNavigationButtons/BoardNavigationButtons';
+
+function Board() {
+  const currentGame = useMemo(() => new Chess('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'), []);
   const [fenInput, setFenInput] = useState('');
   const [pgnInput, setPgnInput] = useState('');
-  
-  useEffect(() => {
-    const newHistory = getFenHistory(game);
-    setFenHistory(() => { return { fens: newHistory, pointer: newHistory.length - 1 }});
-  }, [game])
 
-  const STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-  
+  const gameHistory = useSelector(state => state.analysisBoard.gameHistory);
+  const dispatch = useDispatch();
+
   // GAME TO VIEW FUNCTIONS
+  function updateGame (game, gameComments) {
+    const fenHistory = getFenHistory(game);
+    dispatch(gameUpdated({ fenHistory, pointer: fenHistory.length - 1 }))
+    dispatch(pgnCommentsUpdated(gameComments || {}));
+  }
 
   // Load Game from Fen
-  function gameStartFromFen (fen) {
-    setGame(() => {
-      setBoardPosition(fen)
-      return new Chess(fen);
-    })
+  function gameStartFromFen(fen, game) {
+    game.load(fen)
+    updateGame(game);
+    setFenInput('');
   }
 
-  async function gameFromPgn(pgn) {
-    try {
-      const parsedPgn = parse(pgn);
-      setGame((game) => {
-        console.log({parsedPgn});
-        const importingGame = new Chess();
-        const comments = {};
-        const valid = parsedPgn[0].moves.every(move => {
-          const gameProgress = importingGame.move(move.move);
-          if (gameProgress !== null) {
-            // Will have to check if key is already present and push when integrating multiple sources in a single object
-            const currentFen = importingGame.fen();
-            comments[currentFen] = move.comments.map(comment=> {
-              return {title: '', text: comment.text, source: 'Pgn', tags:[], fen: currentFen }
-            });
-            return true;
-          } else {
-            return false;
-          }
-        });
-        if (valid) {
-          const headers = parsedPgn[0].headers.slice(1).reduce((str, header) => `${str}\n${header.name}: ${header.value}`, '');
-          console.log(parsedPgn[0]);
-          console.log(headers[0]);
-          comments[STARTING_FEN] = [{title: '', text : headers, source:'Pgn', tags: [], fen: STARTING_FEN}];
-          console.log(headers);
-          setBoardPosition(importingGame.fen());
-          setPgnComments(comments);
-          setPgnInput('');
-          return importingGame;
-        } else {
-          alert('Invalid  or Incompatible Pgn');
-          return game;
-        }
-      });
-    } catch (error) {
-      alert('Invalid  or Incompatible Pgn');
-      console.log(error);
-    }
+  // Load Game from Fen
+  function loadGame(gameData) {
+    updateGame(gameData.game, gameData.comments);
   }
+
 
   // Make a Move (triggered on piece drop)
-  function makeAMove(move) {
+  function makeAMove(move, game) {
     if (game.isGameOver()) return false;
-    const gameCopy = copyGame(game);
-    const result = gameCopy.move(move);
-    setGame(() => {
-      setBoardPosition(gameCopy.fen());
-      return gameCopy;
-    });
+    const result = game.move(move);
+    dispatch(moveMade(game.fen()))
     // THIS RESULT ONLY CONTROLS PREMOVE LOGIC!
     return result; // null if the move was illegal, the move object if the move was legal
   }
 
-
   // HELPER FUNCTIONS
-  function copyGame (game) {
-    const prototype = Object.getPrototypeOf(game);
-    const gameCopy = Object.assign(Object.create(prototype), game);
-    return gameCopy;
-  }
-
-  function moveFenHistoryPointer (newPointer) {
-    setFenHistory((history) => {
-      return { fens: history.fens, pointer: newPointer };
-    });
-  }
-
 
   function getFenHistory(game) {
-    const gameHistory = game.history({verbose:true});
-    return gameHistory.length ? [gameHistory[0].before].concat(gameHistory.map(move => move.after)) : [game.fen()];
+    const gameHistory = game.history({ verbose: true });
+    return gameHistory.length ? [gameHistory[0].before].concat(gameHistory.map(move => move.after)) : [currentGame.fen()];
   }
 
   // BOARD TO GAME FUNCTIONS
@@ -111,78 +61,29 @@ function Board ({setPgnComments, setBoardPosition, boardPosition}) {
       from: sourceSquare,
       to: targetSquare,
       promotion: piece[1].toLowerCase() ?? "q"
-    });
+    }, currentGame);
     // illegal move
-    
-    if (move === null) return false;
+
+    if (move === null || currentGame.isGameOver()) return false;
     return true;
   }
 
   // Reset Game
   function onResetHandler() {
-
-    setGame((game) => {
-      const gameCopy = copyGame(game);
-      gameCopy.reset();
-      setBoardPosition(gameCopy.fen());
-      setPgnComments({});
-      return gameCopy;
-    });
+    currentGame.reset();
+    updateGame(currentGame)
+    dispatch(pgnCommentsUpdated({}));
   }
 
   // Undo last Move
-  function onUndoHandler () {
-    setGame((game) => {
-      const gameCopy = copyGame(game);
-      gameCopy.undo();
-      setBoardPosition(gameCopy.fen());
-      return gameCopy;
-    });
-  }
-
-  // View Initial Position
-  function onBeginningHandler () {
-    setBoardPosition(() => {
-      const newPointer = 0;
-      moveFenHistoryPointer(newPointer);
-      return fenHistory.fens[`${newPointer}`];
-    });
-  }
-
-  // View Previous Position
-  function onPreviousHandler() {
-    if (fenHistory.pointer > 0) {
-      setBoardPosition(() => {
-        const newPointer = fenHistory.pointer -1;
-        moveFenHistoryPointer(newPointer);
-        return fenHistory.fens[`${newPointer}`]
-      });
-    }
-  }
-
-  // View Next Position
-  function onNextHandler() {
-    if (fenHistory.pointer < fenHistory.fens.length -1) {
-      setBoardPosition(() => {
-        const newPointer = fenHistory.pointer +1;
-        moveFenHistoryPointer(newPointer);
-        return fenHistory.fens[`${newPointer}`]
-      });
-    }
-  }
-
-  // View Last Position
-  function onLastHandler() {
-    setBoardPosition(() => {
-      const newPointer = fenHistory.fens.length - 1;
-      moveFenHistoryPointer(newPointer);
-      return fenHistory.fens[`${newPointer}`];
-    });
+  function onUndoHandler() {
+    currentGame.undo();
+    dispatch(moveUndone())
   }
 
   // BUTTON AND FORM FUNCTIONS
-  // Load a new game from custom position
-  function onFenInputChange (e) {
+  // Load a new game from custom position or 
+  function onFenInputChange(e) {
     setFenInput(e.target.value)
   }
 
@@ -192,40 +93,41 @@ function Board ({setPgnComments, setBoardPosition, boardPosition}) {
 
   function onFenSubmitHandler(event) {
     event.preventDefault();
-    validateFen(fenInput).ok ? gameStartFromFen(fenInput) : alert('Invalid Fen');
-    setFenInput('');
+    if (validateFen(fenInput).ok) {
+      gameStartFromFen(fenInput, currentGame);
+    } else { alert('Invalid Fen') }
   }
 
-  function onPgnSubmitHandler(event) {
+  async function onPgnSubmitHandler(event) {
     event.preventDefault();
-    gameFromPgn(pgnInput);
-    setPgnInput('');
-  }
+    const importedGame = await gameFromPgn(pgnInput, currentGame);
+    loadGame(importedGame);
 
+    if (importedGame.valid) {
+      setPgnInput('');
+    }
+  }
 
   return (
     <>
-        <div className='board-wrapper' >
-        <Chessboard id="BasicBoard" position={boardPosition} onPieceDrop={onPieceDropHandler} arePiecesDraggable={fenHistory.pointer === fenHistory.fens.length-1}/>
-        </div>
-        <div className='game-navigation-buttons'>
+      <div className='board-wrapper' >
+        <Chessboard id="BasicBoard" position={gameHistory.fenHistory[gameHistory.pointer]} onPieceDrop={onPieceDropHandler} arePiecesDraggable={gameHistory.pointer === gameHistory.fenHistory.length - 1} />
+      </div>
+      <div className='game-navigation-buttons'>
         <button className='navigation-button' onClick={onResetHandler}>Reset</button>
         <button className='navigation-button' onClick={onUndoHandler}>Undo</button>
-        <button className='navigation-button' onClick={onBeginningHandler}>Beginning</button>
-        <button className='navigation-button' onClick={onPreviousHandler}>Previous</button>
-        <button className='navigation-button' onClick={onNextHandler}>Next</button>
-        <button className='navigation-button' onClick={onLastHandler}>Last</button>
-        </div>
-        <div className='game-load-inputs'>
-          <form onSubmit={onFenSubmitHandler}>
-            <input className='game-loader-input' type='text' placeholder='Paste Fen here' value={fenInput} onChange={onFenInputChange} ></input>
-            <input className='game-loader-button' type='submit' value='Load Fen' onChange={onPgnInputChange}></input>
-          </form>
-          <form onSubmit={onPgnSubmitHandler}>
-            <input className = 'game-loader-input' type='text' placeholder='Paste Pgn here' value={pgnInput} onChange={onPgnInputChange} ></input>
-            <input className='game-loader-button'type='submit' value='Load Pgn'></input>
-          </form>
-        </div>
+      </div>
+      <BoardNavigationButtons/>
+      <div className='game-load-inputs'>
+        <form onSubmit={onFenSubmitHandler}>
+          <input className='game-loader-input' type='text' placeholder='Paste Fen here' value={fenInput} onChange={onFenInputChange} ></input>
+          <input className='game-loader-button' type='submit' value='Load Fen' onChange={onPgnInputChange}></input>
+        </form>
+        <form onSubmit={onPgnSubmitHandler}>
+          <input className='game-loader-input' type='text' placeholder='Paste Pgn here' value={pgnInput} onChange={onPgnInputChange} ></input>
+          <input className='game-loader-button' type='submit' value='Load Pgn'></input>
+        </form>
+      </div>
     </>
   )
 }
